@@ -1,4 +1,9 @@
 Rails.application.routes.draw do
+  get 'recordings/index'
+  get 'recordings/picker/:id' => 'recordings#picker', as: 'pick_recording'
+
+  #match "/images/store/:path/:file" => "recordings#image_proxy", via: :get
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

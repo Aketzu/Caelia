@@ -43,3 +43,6 @@ group :development, :test do
   gem 'spring'
 end
 
+gem 'rufus-scheduler'
+gem 'streamio-ffmpeg'
+gem 'therubyracer'

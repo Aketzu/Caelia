@@ -1,0 +1,16 @@
+<h1>Pick position</h1>
+<script>
+function updtime(x) {
+  $("#timepos").val(x.currentTime);
+}
+</script>
+
+<video ontimeupdate="updtime(this)" controls>
+ <source src="<%=image_path("store/" + @recording.video_path_mp4) %>" type='video/mp4'>
+</video>
+
+<%= form_tag do %>
+<%=label_tag(:timepos, "Cut time position")%>
+<%=text_field_tag(:timepos)%>
+<%= submit_tag("Set") %>
+<% end %>

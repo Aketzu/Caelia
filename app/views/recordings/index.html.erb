@@ -1,0 +1,27 @@
+<h1>Recordings</h1>
+
+<% unless @filelist %>
+
+<table>
+<%@recordings.each {|r|%>
+<tr>
+<td><%=link_to File.basename(r.path), recordings_index_path(path: File.basename(r.path))%></td>
+<td><%=r.recorded_at.localtime.strftime("%Y-%m-%d %H:%M:%S")%></td>
+</tr>
+<% } %>
+</table>
+
+<% else %>
+
+<table>
+<%@recordings.each {|r|%>
+<tr>
+<td><%=File.basename(r.path)%></td>
+<td><%=r.filename%></td>
+<td><%=r.recorded_at.localtime.strftime("%Y-%m-%d %H:%M:%S")%></td>
+<td><%=link_to image_tag("store/" + r.preview_path, height: 180), pick_recording_path(r) %></td>
+</tr>
+<% } %>
+</table>
+
+<% end %>
