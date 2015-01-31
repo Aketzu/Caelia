@@ -1,0 +1,9 @@
+#!/bin/sh
+
+/home/stream/src/bmdtools/bmdcapture -C 0 -m 13 -F nut \
+	-o strict=experimental:syncpoints=none -f pipe:1 | \
+ffmpeg -vsync passthrough -y -i - -force_key_frames 'expr:gte(t,n_forced*30)' \
+	-vcodec libx264 -preset medium -acodec libfaac  \
+	-x264opts level=4.1:crf=20 \
+	-f segment -segment_time 30 -segment_list cap.ffcat \
+	cap%04d.nut
