@@ -5,7 +5,21 @@ Recording: <%=@vod.recording.name%><br />
 Start: <%=@vod.start_pos%> <%=link_to "Pick", list_recording_path(@vod.recording, vod: @vod, pos: :start)%><br />
 End: <%=@vod.end_pos%> <%=link_to "Pick", list_recording_path(@vod.recording, vod: @vod, pos: :end)%><br />
 
-Length: <%=@vod.length%><br />
+<div id="status">
+  <%=render partial: "status" %>
+</div>
+
+<script>
+function executeQuery() {
+  $('#status').load('<%=vod_path(@vod, status: 1)%>');
+  setTimeout(executeQuery, 1000);
+}
+
+$(document).ready(function() {
+  setTimeout(executeQuery, 1000);
+});
+
+</script>
 
 
 <%= link_to 'Edit', edit_vod_path(@vod) %> |

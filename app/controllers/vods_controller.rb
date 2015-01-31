@@ -10,6 +10,10 @@ class VodsController < ApplicationController
   # GET /vods/1
   # GET /vods/1.json
   def show
+    if request.xhr? and params[:status] == "1"
+      render partial: "status"
+
+    end
   end
 
   # GET /vods/new

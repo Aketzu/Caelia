@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150131122928) do
+ActiveRecord::Schema.define(version: 20150131195129) do
 
   create_table "recordings", force: :cascade do |t|
     t.string   "basepath"
@@ -39,6 +39,8 @@ ActiveRecord::Schema.define(version: 20150131122928) do
     t.decimal  "end_pos",      precision: 10, scale: 2
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
+    t.float    "encode_pos"
+    t.integer  "status"
   end
 
   add_index "vods", ["recording_id"], name: "index_vods_on_recording_id"

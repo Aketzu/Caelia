@@ -5,6 +5,10 @@
 <table>
   <thead>
     <tr>
+      <th>Name</th>
+      <th>Recording</th>
+      <th>Length</th>
+      <th>Status</th>
       <th colspan="3"></th>
     </tr>
   </thead>
@@ -12,6 +16,10 @@
   <tbody>
     <% @vods.each do |vod| %>
       <tr>
+        <td><%=h vod.name %></td>
+        <td><%=h vod.recording.name %></td>
+        <td><%=h vod.length.to_i %></td>
+        <td><%=h vod.statustext %></td>
         <td><%= link_to 'Show', vod %></td>
         <td><%= link_to 'Edit', edit_vod_path(vod) %></td>
         <td><%= link_to 'Destroy', vod, method: :delete, data: { confirm: 'Are you sure?' } %></td>
