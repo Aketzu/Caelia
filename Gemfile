@@ -46,3 +46,4 @@ end
 gem 'rufus-scheduler'
 gem 'streamio-ffmpeg'
 gem 'therubyracer'
+gem 'youtube_it'

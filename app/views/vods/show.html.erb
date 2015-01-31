@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+Name: <%=@vod.name%><br />
+Recording: <%=@vod.recording.name%><br />
+Start: <%=@vod.start_pos%> <%=link_to "Pick", list_recording_path(@vod.recording, vod: @vod, pos: :start)%><br />
+End: <%=@vod.end_pos%> <%=link_to "Pick", list_recording_path(@vod.recording, vod: @vod, pos: :end)%><br />
+
+Length: <%=@vod.length%><br />
+
+
+<%= link_to 'Edit', edit_vod_path(@vod) %> |
+<%= link_to 'Back', vods_path %> | 
+<%= link_to 'Do VOD', dovod_vod_path(@vod) %> |
+<%= link_to 'Upload to tube', upload_vod_path(@vod) %>

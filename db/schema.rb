@@ -11,15 +11,36 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150130165014) do
+ActiveRecord::Schema.define(version: 20150131122928) do
 
   create_table "recordings", force: :cascade do |t|
-    t.string   "path"
-    t.string   "filename"
-    t.integer  "length"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
-    t.datetime "recorded_at"
+    t.string   "basepath"
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
+
+  create_table "sourcefiles", force: :cascade do |t|
+    t.integer  "recording_id"
+    t.integer  "nr"
+    t.string   "filename"
+    t.decimal  "length",       precision: 10, scale: 2
+    t.datetime "recorded_at"
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
+  end
+
+  add_index "sourcefiles", ["recording_id"], name: "index_sourcefiles_on_recording_id"
+
+  create_table "vods", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "recording_id"
+    t.decimal  "start_pos",    precision: 10, scale: 2
+    t.decimal  "end_pos",      precision: 10, scale: 2
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
+  end
+
+  add_index "vods", ["recording_id"], name: "index_vods_on_recording_id"
 
 end

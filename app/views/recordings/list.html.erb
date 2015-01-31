@@ -1,0 +1,11 @@
+<h1>Recordings</h1>
+
+<% h = -1 %>
+<%@recording.sourcefiles.sort.each {|sf|%>
+<% if sf.recorded_at.hour != h
+h = sf.recorded_at.hour
+%>
+<hr/><h2><%=sf.recorded_at.localtime.strftime("%Y-%m-%d %H:%M")%></h2>
+<% end %>
+<%=link_to image_tag("store/" + sf.preview_path, height: 180), pick_recording_path(sf, vod: params[:vod], pos: params[:pos]), title: sf.recorded_at.localtime.strftime("%Y-%m-%d %H:%M:%S") %> 
+<% } %>

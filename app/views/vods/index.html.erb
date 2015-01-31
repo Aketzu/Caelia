@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Vods</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @vods.each do |vod| %>
+      <tr>
+        <td><%= link_to 'Show', vod %></td>
+        <td><%= link_to 'Edit', edit_vod_path(vod) %></td>
+        <td><%= link_to 'Destroy', vod, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Vod', new_vod_path %>

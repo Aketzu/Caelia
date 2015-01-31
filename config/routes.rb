@@ -1,8 +1,22 @@
 Rails.application.routes.draw do
+  resources :vods do
+    member do
+      post :setpos
+      get :dovod
+      get :upload
+    end
+  end
+
+  get 'sourcefiles/picker'
+
   get 'recordings/index'
-  get 'recordings/picker/:id' => 'recordings#picker', as: 'pick_recording'
+  get 'recordings/:id' => 'recordings#list', as: 'list_recording'
+
+  get 'recordings/picker/:id' => 'sourcefiles#picker', as: 'pick_recording'
 
   #match "/images/store/:path/:file" => "recordings#image_proxy", via: :get
+
+  root 'recordings#index'
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

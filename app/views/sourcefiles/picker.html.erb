@@ -1,0 +1,29 @@
+<h1>Pick position</h1>
+<script>
+function updtime(x) {
+  $("#timepos").val(x.currentTime);
+}
+</script>
+
+<% def imglink(sf) %>
+<%=link_to image_tag("store/" + sf.preview_path, height: 180), pick_recording_path(sf, vod: params[:vod], pos: params[:pos]), title: sf.recorded_at.localtime.strftime("%Y-%m-%d %H:%M:%S") %>
+<% end %>
+
+Prev
+<%
+imglink Sourcefile.where(recording_id: @sourcefile.recording_id, nr: (@sourcefile.nr-1)).first
+imglink Sourcefile.where(recording_id: @sourcefile.recording_id, nr: (@sourcefile.nr+1)).first
+%>
+Next
+
+<video ontimeupdate="updtime(this)" controls>
+ <source src="<%=image_path("store/" + @sourcefile.video_path_mp4) %>" type='video/mp4'>
+</video>
+
+<%= form_tag setpos_vod_path(params[:vod]) do %>
+<%=hidden_field_tag(:pos, params[:pos])%>
+<%=hidden_field_tag(:sourcefile_id, @sourcefile.id)%>
+<%=label_tag(:timepos, "Cut time position")%>
+<%=text_field_tag(:timepos)%>
+<%= submit_tag("Set") %>
+<% end %>

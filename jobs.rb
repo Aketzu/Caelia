@@ -10,36 +10,28 @@ scheduler = Rufus::Scheduler.new
 
 ROOTPATH="/home/stream/src/bmdtools"
 
-#scheduler.every '10s' do
+#scheduler.every '5min' do
   Dir.glob(ROOTPATH + "/*").sort.each { |fn|
     if File.directory?(fn)
       progname = File.basename(fn)
+      rec = Recording.find_or_create_by(basepath: ROOTPATH, name: progname)
+      #rec.save
+
       Dir.glob(fn + "/*.nut").sort.each {|f|
         file = File.basename(f)
-        puts file
-        previewfile = "preview_" + File.basename(f, ".nut") + ".jpg"
-        unless File.exists?(fn + "/" + previewfile)
-          system("ffmpeg -i \"%s\" -vframes 1 \"%s\"" % [f, fn + "/" + previewfile])
-        end
+        print progname + "/" + file + "\r"
+        sf = Sourcefile.find_or_create_by(recording: rec, filename: file)
+        sf.recorded_at = File.mtime(f)
+        sf.check_preview
+        sf.nr = sf.filename.gsub(/[^0-9]/,"").to_i
 
-        rec = Recording.where(path: progname, filename: file).first
-        unless rec
-          rec = Recording.new(path: progname, filename: file)
-          rec.save
-        end
-        rec.path = progname
-        rec.recorded_at = File.ctime(f)
-
-        unless rec.length
+        unless sf.length
           movie = FFMPEG::Movie.new(f)
-          rec.length = movie.duration
+          sf.length = movie.duration
         end
-        rec.save
-
+        sf.save
       }
     end
-
-
   }
 #end
 
