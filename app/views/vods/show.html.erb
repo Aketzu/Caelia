@@ -2,6 +2,7 @@
 
 Name: <%=@vod.name%><br />
 Recording: <%=@vod.recording.name%><br />
+ElaineID: <%=@vod.elaineid%><br />
 Start: <%=@vod.start_pos%> <%=link_to "Pick", list_recording_path(@vod.recording, vod: @vod, pos: :start)%><br />
 End: <%=@vod.end_pos%> <%=link_to "Pick", list_recording_path(@vod.recording, vod: @vod, pos: :end)%><br />
 

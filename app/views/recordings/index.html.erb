@@ -4,7 +4,7 @@
 <%@recordings.each {|r|%>
 <tr>
 <td><%=link_to r.name, list_recording_path(r)%></td>
-<td><%=r.sourcefiles.first.recorded_at.localtime.strftime("%Y-%m-%d %H:%M:%S")%></td>
+<td><%=r.sourcefiles.first.recorded_at.localtime.strftime("%Y-%m-%d %H:%M:%S") rescue "?"%></td>
 </tr>
 <% } %>
 </table>

@@ -5,5 +5,6 @@ class RecordingsController < ApplicationController
 
   def list
     @recording = Recording.find(params[:id])
+    @vod = Vod.find(params[:vod]) if params[:vod]
   end
 end

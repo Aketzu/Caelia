@@ -5,6 +5,9 @@ Rails.application.routes.draw do
       get :dovod
       get :upload
     end
+    collection do
+      get :checkencodings
+    end
   end
 
   get 'sourcefiles/picker'

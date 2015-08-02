@@ -1,3 +1,5 @@
+require 'net/http'
+
 class Vod < ActiveRecord::Base
   belongs_to :recording
 
@@ -16,8 +18,13 @@ class Vod < ActiveRecord::Base
     }
   end
 
+  def title_fn
+    self.name.scan(/./).map { |ch| ch.gsub(/ /, '_').gsub(/[^A-Za-z0-9_]/,'')  }.flatten.join("")
+  end
+
   def vod_filepath
-    recording.filepath+"/vod_"+id.to_s + ".mp4"
+    return recording.basepath+"/" + self.elaineid.to_s + "_" + title_fn + ".mp4" if self.elaineid and self.elaineid > 0
+    recording.basepath+"/vod_"+id.to_s + ".mp4"
   end
 
   def self.Statuses
@@ -56,7 +63,10 @@ class Vod < ActiveRecord::Base
             #if pos - prevpos > 100
               self.encode_pos = pos/100
               prevpos = pos
-              save
+              begin
+                save
+              rescue
+              end
             #end
           end
         end
@@ -64,6 +74,7 @@ class Vod < ActiveRecord::Base
     end
 
     #xx if $?.exitstatus != 0
+    self.encode_pos = self.length
 
     self.status = 3
     save
@@ -77,10 +88,45 @@ class Vod < ActiveRecord::Base
   def upload
     self.status = 5
     save
-    client = YouTubeIt::Client.new(:username => YOUTUBE_USERNAME, :password => YOUTUBE_PASSWORD, :dev_key => YOUTUBE_DEVKEY)
-    client.video_upload(File.open(vod_filepath), :title => name, :description => "Test upload", :category => "Entertainment", :private => true)
+
+=begin
+    Yt.configure do |config|
+			config.client_id = '696179412564-a4iin9r2adn6ee51rflm8onvs2e7e3ks.apps.googleusercontent.com'
+			config.client_secret = 'banqc5vbVAbdIKUZcvluYYR1'
+		end
+		account = Yt::Account.new access_token: 'ya29.wAEEpEzR88sTXyN-3k0AzIXRdBSQ6QQXmx9BVmg5F7SnWbJj0aJM_8w_ex2aUxVhFUwg', refresh_token: '1/weD693xQiwOhXbeqLbvjFq-pkfkN0pS7t9kdINHgkbbBactUREZofsF9C7PrpE-j'
+
+		vid = account.upload_video File.open(vod_filepath), title: name, description: 'Test upload', category: 'Entertainment', privacy_status: :private
+
+		#vid.id
+
+=end
+    command="youtube-upload  -t \"%s\" --privacy=unlisted \"%s\"  -c Entertainment 2>&1 " % [name, vod_filepath ]
+
+    progress = nil
+    duration = nil
+    prevpos = 0
+    IO.popen(command) do |pipe|
+      pipe.each("\r") do |line|
+
+        #frame=  497 fps= 79 q=26.0 size=    1655kB time=00:00:07.25 bitrate=1870.0kbits/s
+        if line =~ / ([0-9]*)% / 
+					self.encode_pos = $1.to_i/100.0*self.length
+					save
+        end
+      end
+    end
+
+    self.encode_pos = self.length
+
     self.status = 6
     save
 
+  end
+
+  def push_to_elaine
+    resp = Net::HTTP.post_form(URI("http://elaine.assembly.org/programs/addprog"), name: self.name).body
+    logger.debug resp
+    self.elaineid = resp
   end
 end

@@ -12,9 +12,10 @@
   <% end %>
 
   <%=f.label :name%> <%=f.text_field :name%> <br />
-  <%=f.label :recording_id%> <%=f.select :recording_id, options_for_select(Recording.all.map {|r| [r.name, r.id]})%> <br />
-  <%=f.label :start_pod%> <%=f.text_field :start_pos%> <br />
-  <%=f.label :end_pod%> <%=f.text_field :end_pos%> <br />
+  <%=f.label :recording_id%> <%=f.select :recording_id, options_for_select(Recording.all.map {|r| [r.name, r.id]}, f.object.recording_id)%> <br />
+  <%=f.label :start_pos%> <%=f.text_field :start_pos%> <br />
+  <%=f.label :end_pos%> <%=f.text_field :end_pos%> <br />
+  <%=f.label :elaineid%> <%=f.text_field :elaineid%> <br />
 
 
   <div class="actions">

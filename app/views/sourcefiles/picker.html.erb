@@ -1,11 +1,13 @@
-<h1>Pick position</h1>
+<h1>Pick position, Current: <%= @sourcefile.recorded_at.localtime.strftime("%Y-%m-%d %H:%M:%S")%></h1>
 <script>
 function updtime(x) {
   $("#timepos").val(x.currentTime);
 }
 </script>
 
-<% def imglink(sf) %>
+<% def imglink(sf)
+  return unless sf
+%>
 <%=link_to image_tag("store/" + sf.preview_path, height: 180), pick_recording_path(sf, vod: params[:vod], pos: params[:pos]), title: sf.recorded_at.localtime.strftime("%Y-%m-%d %H:%M:%S") %>
 <% end %>
 
@@ -20,6 +22,8 @@ Next
  <source src="<%=image_path("store/" + @sourcefile.video_path_mp4) %>" type='video/mp4'>
 </video>
 
+
+<% if params[:vod] %>
 <%= form_tag setpos_vod_path(params[:vod]) do %>
 <%=hidden_field_tag(:pos, params[:pos])%>
 <%=hidden_field_tag(:sourcefile_id, @sourcefile.id)%>
@@ -27,3 +31,15 @@ Next
 <%=text_field_tag(:timepos)%>
 <%= submit_tag("Set") %>
 <% end %>
+<% else %>
+
+<%= form_tag new_vod_path(), method: :get do %>
+<%=hidden_field_tag(:pos, params[:pos])%>
+<%=hidden_field_tag(:sourcefile_id, @sourcefile.id)%>
+<%=label_tag(:timepos, "Cut time position")%>
+<%=text_field_tag(:timepos)%>
+<%= submit_tag("Start new vod here") %>
+<% end %>
+
+<% end %>
+

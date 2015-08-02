@@ -1,8 +1,10 @@
 <h1>Recordings</h1>
 
 <% h = -1 %>
-<%@recording.sourcefiles.sort.each {|sf|%>
-<% if sf.recorded_at.hour != h
+<%@recording.sourcefiles.sort.each {|sf|
+  next if params[:pos] == "end" && (sf.nr+1)*30 <= @vod.start_pos
+
+if sf.recorded_at.hour != h
 h = sf.recorded_at.hour
 %>
 <hr/><h2><%=sf.recorded_at.localtime.strftime("%Y-%m-%d %H:%M")%></h2>

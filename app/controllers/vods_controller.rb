@@ -19,6 +19,11 @@ class VodsController < ApplicationController
   # GET /vods/new
   def new
     @vod = Vod.new
+  	if params[:sourcefile_id]
+			sf = Sourcefile.find(params[:sourcefile_id])
+			@vod.start_pos = (sf.nr) * 30 + params[:timepos].to_f
+			@vod.recording_id = sf.recording_id
+		end
   end
 
   # GET /vods/1/edit
@@ -29,6 +34,7 @@ class VodsController < ApplicationController
   # POST /vods.json
   def create
     @vod = Vod.new(vod_params)
+    @vod.push_to_elaine if @vod.elaineid == 0
 
     respond_to do |format|
       if @vod.save
@@ -70,8 +76,8 @@ class VodsController < ApplicationController
 
     sf = Sourcefile.find(params[:sourcefile_id])
 
-    @vod.start_pos = (sf.nr+1) * 30 + params[:timepos].to_f if params[:pos] == "start"
-    @vod.end_pos = (sf.nr+1) * 30 + params[:timepos].to_f if params[:pos] == "end"
+    @vod.start_pos = (sf.nr) * 30 + params[:timepos].to_f if params[:pos] == "start"
+    @vod.end_pos = (sf.nr) * 30 + params[:timepos].to_f if params[:pos] == "end"
 
     respond_to do |format|
       if @vod.save
@@ -84,10 +90,41 @@ class VodsController < ApplicationController
     end
   end
 
+  def checkencodings
+    Vod.all.each {|v|
+      unless v.status
+        v.status=0
+        v.save
+      end
+      next if v.status == 0 or v.status >= 4
+      if (Time.now - v.updated_at) > 1.minute
+        v.status = 0
+        v.save
+      end
+    }
+    if Vod.all.where('status = 2').count == 0
+      job_id = Rufus::Scheduler.singleton.in '1s', :mutex => "vod_encode" do
+        begin
+          Vod.all.where('status = 0').first.encode
+        rescue Exception => ex
+          logger.error ex.message
+          logger.error ex.backtrace
+        end
+      end
+    end
+
+    render :text => ""
+  end
+
   def dovod
     @vod = Vod.find(params[:id])
-    job_id = Rufus::Scheduler.singleton.in '1s' do
-      @vod.encode
+    job_id = Rufus::Scheduler.singleton.in '1s', :mutex => "vod_encode" do
+      begin
+        @vod.encode
+      rescue Exception => ex
+        logger.error ex.message
+        logger.error ex.backtrace
+      end
     end
 
     respond_to do |format|
@@ -115,6 +152,6 @@ class VodsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def vod_params
-      params[:vod].permit(:name, :recording_id, :start_pos, :end_pos)
+      params[:vod].permit(:name, :recording_id, :start_pos, :end_pos, :elaineid)
     end
 end
