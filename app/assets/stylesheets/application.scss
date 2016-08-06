@@ -10,6 +10,21 @@
  * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
  * file per style scope.
  *
- *= require_tree .
- *= require_self
  */
+
+@import "bootstrap-sprockets";
+@import "bootstrap";
+
+@import "sb-admin-2";
+@import "timeline";
+
+.recfile {
+	border: 1px solid white;
+}
+.recfile-used {
+	border: 2px solid green;
+	opacity: 0.8;
+	-webkit-filter: contrast(1.2) brightness(1.2);
+}
+
+body { padding-top: 50px; }

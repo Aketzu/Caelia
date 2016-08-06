@@ -8,7 +8,7 @@ require 'streamio-ffmpeg'
 
 scheduler = Rufus::Scheduler.new
 
-ROOTPATH="/mnt/asmvid/rec"
+ROOTPATH="/mnt/asmvid/capture"
 
 sfs = {}
 
@@ -16,8 +16,10 @@ Sourcefile.all.includes(:recording).each {|s|
  sfs[s.recording_id.to_s + "-" + s.filename] = s
 }
 
+
 #scheduler.every '5min' do
   Dir.glob(ROOTPATH + "/*").sort.each { |fn|
+Sourcefile.transaction {
     if File.directory?(fn)
       progname = File.basename(fn)
       #Recording.transaction {
@@ -42,8 +44,10 @@ Sourcefile.all.includes(:recording).each {|s|
 
       #}
     end
+}
   }
 #end
+
 
 #scheduler.join
   # let the current thread join the scheduler thread

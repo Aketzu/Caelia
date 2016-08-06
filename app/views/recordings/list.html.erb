@@ -1,13 +1,30 @@
 <h1>Recordings</h1>
 
 <% h = -1 %>
+<%
+@vodrng=[]
+@recording.vods.each {|vod|
+	next unless vod.end_pos && vod.end_pos > 0
+	logger.debug vod.start_pos
+	logger.debug vod.end_pos
+	@vodrng << (vod.start_pos..vod.end_pos)
+}
+
+def inrange(pos)
+	@vodrng.each {|r| return true if r.include? pos }
+	false
+end
+logger.debug @vodrng.inspect
+%>
 <%@recording.sourcefiles.sort.each {|sf|
   next if params[:pos] == "end" && (sf.nr+1)*30 <= @vod.start_pos
+  rstart = sf.nr*30
 
 if sf.recorded_at.hour != h
 h = sf.recorded_at.hour
 %>
 <hr/><h2><%=sf.recorded_at.localtime.strftime("%Y-%m-%d %H:%M")%></h2>
 <% end %>
-<%=link_to image_tag("store/" + sf.preview_path, height: 180), pick_recording_path(sf, vod: params[:vod], pos: params[:pos]), title: sf.recorded_at.localtime.strftime("%Y-%m-%d %H:%M:%S") %> 
+
+<%=link_to image_tag("store/" + sf.preview_path, width: 320, height: 180, class: "recfile " + (inrange(rstart) ? "recfile-used" : "")), pick_recording_path(sf, vod: params[:vod], pos: params[:pos]), title: sf.recorded_at.localtime.strftime("%Y-%m-%d %H:%M:%S") %>
 <% } %>

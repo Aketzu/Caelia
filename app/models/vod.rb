@@ -34,6 +34,16 @@ class Vod < ActiveRecord::Base
     return Vod.Statuses[status] if status
     "?"
   end
+  def statusclass
+    ss = ["", "info", "active", "info", "success", "active", "success"]
+    return ss[status] if status
+  end
+
+  def prepare_encode
+    self.status = 1
+    self.encode_pos = 0
+    save
+  end
 
   def encode
     self.status = 1
@@ -82,6 +92,12 @@ class Vod < ActiveRecord::Base
     system("nice -n20 ionice -c3 mp4file --optimize \"%s\"" % [vod_filepath])
 
     self.status = 4
+    save
+  end
+
+  def prepare_upload
+    self.status = 5
+    self.encode_pos = 0
     save
   end
 

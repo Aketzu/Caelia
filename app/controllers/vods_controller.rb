@@ -4,7 +4,7 @@ class VodsController < ApplicationController
   # GET /vods
   # GET /vods.json
   def index
-    @vods = Vod.all
+    @vods = Vod.all.order(:name)
   end
 
   # GET /vods/1
@@ -118,6 +118,7 @@ class VodsController < ApplicationController
 
   def dovod
     @vod = Vod.find(params[:id])
+    @vod.prepare_encode
     job_id = Rufus::Scheduler.singleton.in '1s', :mutex => "vod_encode" do
       begin
         @vod.encode
@@ -134,6 +135,9 @@ class VodsController < ApplicationController
   end
   def upload
     @vod = Vod.find(params[:id])
+    @vod.prepare_upload
+
+    #job_id = Rufus::Scheduler.singleton.in '1s', :mutex => "vod_upload" do
     job_id = Rufus::Scheduler.singleton.in '1s' do
       @vod.upload
     end

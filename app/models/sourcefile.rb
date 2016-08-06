@@ -31,7 +31,7 @@ class Sourcefile < ActiveRecord::Base
   def check_preview
     #previewfile = "preview_" + File.basename(f, ".nut") + ".jpg"
     unless File.exists?(preview_fullpath)
-      system("ffmpeg -v 0 -i \"%s\" -vframes 1 \"%s\"" % [video_fullpath, preview_fullpath])
+      system("ffmpeg -v 0 -i \"%s\" -vframes 1 -s 320x180 \"%s\"" % [video_fullpath, preview_fullpath])
     end
   end
 

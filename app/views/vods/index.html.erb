@@ -2,34 +2,36 @@
 
 <h1>Listing Vods</h1>
 
-<table>
+<table class="table table-striped table-hover table-condensed">
   <thead>
     <tr>
+      <th>ID</th>
       <th>Name</th>
       <th>Recording</th>
       <th>Length</th>
       <th>Status</th>
       <th>Progress</th>
-      <th colspan="3"></th>
+      <th colspan="5"></th>
     </tr>
   </thead>
 
   <tbody>
     <% @vods.each do |vod| %>
       <tr>
+        <td><%=h vod.id %></td>
         <td><%=h vod.name %></td>
         <td><%=h vod.recording.name rescue "?"%></td>
         <td><%=h vod.length.to_i %></td>
-        <td><%=h vod.statustext %></td>
+        <td class="<%=vod.statusclass%>"><%=h vod.statustext %></td>
 	<td><%="%.1fs" % vod.encode_pos rescue "?"%> (<%= "%.2f" % (vod.encode_pos / vod.length*100) rescue "?"%>%)</td>
         <td><%= link_to 'Show', vod %></td>
         <td><%= link_to 'Edit', edit_vod_path(vod) %></td>
         <td><%= link_to 'Destroy', vod, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+	<td><%= link_to 'Do VOD', dovod_vod_path(vod) %></td>
+	<td><%= link_to 'Upload to tube', upload_vod_path(vod) %></td>
       </tr>
     <% end %>
   </tbody>
 </table>
 
 <br>
-
-<%= link_to 'New Vod', new_vod_path %>
