@@ -1,9 +1,21 @@
-#!/bin/sh
+#!/bin/bash
 
-/home/stream/src/bmdtools/bmdcapture -C 0 -m 13 -F nut \
-	-o strict=experimental:syncpoints=none -f pipe:1 | \
-ffmpeg -vsync passthrough -y -i - -force_key_frames 'expr:gte(t,n_forced*30)' \
-	-vcodec libx264 -preset medium -acodec libfaac  \
-	-x264opts level=4.1:crf=20 \
-	-f segment -segment_time 30 -segment_list cap.ffcat \
-	cap%04d.nut
+for ((;;)); do
+        DIR=/home/stream/capture/cap_gen1_$(date +%Y%m%d_%H%M)/
+
+        mkdir -p $DIR
+        cd $DIR
+
+#               -filter:v yadif -s 1280x720 \
+        /home/stream/capture/bmdcapture -C 0 -m 13 -A 2 -V 4 -F nut \
+                -o strict=experimental:syncpoints=none -f pipe:1 | \
+        ffmpeg -vsync passthrough -y -i - -force_key_frames 'expr:gte(t,n_forced*30)' \
+                -vcodec libx264 -preset fast -acodec libfaac  \
+                -x264opts level=4.1:crf=20 \
+                -maxrate 10000k -bufsize 3000k \
+                -f segment -segment_time 30 -segment_list cap.ffcat \
+                cap%04d.nut
+
+        sleep 1
+done
+
