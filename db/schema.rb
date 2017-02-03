@@ -13,6 +13,9 @@
 
 ActiveRecord::Schema.define(version: 20150731122428) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "recordings", force: :cascade do |t|
     t.string   "basepath"
     t.string   "name"
@@ -30,7 +33,7 @@ ActiveRecord::Schema.define(version: 20150731122428) do
     t.datetime "updated_at",                            null: false
   end
 
-  add_index "sourcefiles", ["recording_id"], name: "index_sourcefiles_on_recording_id"
+  add_index "sourcefiles", ["recording_id"], name: "index_sourcefiles_on_recording_id", using: :btree
 
   create_table "vods", force: :cascade do |t|
     t.string   "name"
@@ -44,6 +47,8 @@ ActiveRecord::Schema.define(version: 20150731122428) do
     t.integer  "elaineid"
   end
 
-  add_index "vods", ["recording_id"], name: "index_vods_on_recording_id"
+  add_index "vods", ["recording_id"], name: "index_vods_on_recording_id", using: :btree
 
+  add_foreign_key "sourcefiles", "recordings"
+  add_foreign_key "vods", "recordings"
 end

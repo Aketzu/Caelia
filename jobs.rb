@@ -8,7 +8,7 @@ require 'streamio-ffmpeg'
 
 scheduler = Rufus::Scheduler.new
 
-ROOTPATH="/mnt/asmvid/capture"
+ROOTPATH="/data/rec"
 
 sfs = {}
 
