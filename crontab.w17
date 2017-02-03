@@ -1,0 +1,8 @@
+HOME=/home/stream
+PATH=/home/stream/bin:/home/stream/bin:/usr/local/bin:/usr/bin:/bin:/usr/games:/home/stream/go/bin:/home/stream/go/bin
+
+# m h  dom mon dow   command
+* * * * * rsync -aP stream-gen2:capture/ /data/rec
+* * * * * rsync -aP stream-gen1:capture/ /data/rec
+* * * * * cd /data/Caelia; rails r jobs.rb
+* * * * * rsync -aP /data/ chadwick:/mnt/asmvid/w17
