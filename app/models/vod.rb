@@ -127,8 +127,11 @@ class Vod < ActiveRecord::Base
 
         #frame=  497 fps= 79 q=26.0 size=    1655kB time=00:00:07.25 bitrate=1870.0kbits/s
         if line =~ / ([0-9]*)% / 
-					self.encode_pos = $1.to_i/100.0*self.length
-					save
+          ep = $1.to_i/100.0*self.length
+          if self.encode_pos != ep
+            self.encode_pos = ep 
+            save
+          end
         end
       end
     end

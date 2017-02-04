@@ -1,4 +1,4 @@
-<h1>Pick position, Current: <%= @sourcefile.recorded_at.localtime.strftime("%Y-%m-%d %H:%M:%S")%></h1>
+<%@title = "Pick position, Current: " + @sourcefile.recorded_at.localtime.strftime("%Y-%m-%d %H:%M:%S")%>
 <script>
 function updtime(x) {
   $("#timepos").val(x.currentTime);
@@ -11,12 +11,14 @@ function updtime(x) {
 <%=link_to image_tag("store/" + sf.preview_path, height: 180), pick_recording_path(sf, vod: params[:vod], pos: params[:pos]), title: sf.recorded_at.localtime.strftime("%Y-%m-%d %H:%M:%S") %>
 <% end %>
 
+<div style='float: right; width: 320px;'>
 Prev
-<%
-imglink Sourcefile.where(recording_id: @sourcefile.recording_id, nr: (@sourcefile.nr-1)).first
-imglink Sourcefile.where(recording_id: @sourcefile.recording_id, nr: (@sourcefile.nr+1)).first
-%>
+<% imglink Sourcefile.where(recording_id: @sourcefile.recording_id, nr: (@sourcefile.nr-1)).first %>
+<br />
+<br />
+<% imglink Sourcefile.where(recording_id: @sourcefile.recording_id, nr: (@sourcefile.nr+1)).first %>
 Next
+</div>
 
 <video ontimeupdate="updtime(this)" controls>
  <source src="<%=image_path("store/" + @sourcefile.video_path_mp4) %>" type='video/mp4'>

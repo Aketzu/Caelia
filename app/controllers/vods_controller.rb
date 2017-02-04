@@ -137,8 +137,8 @@ class VodsController < ApplicationController
     @vod = Vod.find(params[:id])
     @vod.prepare_upload
 
-    #job_id = Rufus::Scheduler.singleton.in '1s', :mutex => "vod_upload" do
-    job_id = Rufus::Scheduler.singleton.in '1s' do
+    job_id = Rufus::Scheduler.singleton.in '1s', :mutex => "vod_upload" do
+    #job_id = Rufus::Scheduler.singleton.in '1s' do
       @vod.upload
     end
 
