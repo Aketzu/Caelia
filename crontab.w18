@@ -1,0 +1,12 @@
+
+HOME=/home/stream
+PATH=/home/stream/bin:/home/stream/bin:/usr/local/bin:/usr/bin:/bin:/usr/games:/home/stream/go/bin:/home/stream/go/bin
+
+# m h  dom mon dow   command
+* * * * * rsync -aP stream-gen3.org.asm.fi:capture/ /mnt/asmvid/rec
+* * * * * rsync -aP stream-gen2.org.asm.fi:capture/ /mnt/asmvid/rec
+* * * * * rsync -aP stream-gen1.org.asm.fi:capture/ /mnt/asmvid/rec
+*/5 * * * * cd /mnt/asmvid/Caelia; rails r jobs.rb
+*/15 * * * * sleep 5; rsync -aP --exclude=tmp /mnt/asmvid/ secure.vilant.com:/mnt/asmvid/w18
+*/5 * * * * pg_dump caelia_production | gzip > /mnt/asmvid/caelia.sql.gz
+

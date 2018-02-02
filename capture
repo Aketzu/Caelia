@@ -6,15 +6,19 @@ for ((;;)); do
         mkdir -p $DIR
         cd $DIR
 
-#               -filter:v yadif -s 1280x720 \
-        /home/stream/capture/bmdcapture -C 0 -m 13 -A 2 -V 4 -F nut \
-                -o strict=experimental:syncpoints=none -f pipe:1 | \
+        # -p rgb8
+        /home/stream/capture/bmdcapture -C 0 -m 12 -A 2 -V 4 -M 8 -F nut \
+          -o strict=experimental:syncpoints=none -f pipe:1 | \
         ffmpeg -vsync passthrough -y -i - -force_key_frames 'expr:gte(t,n_forced*30)' \
-                -vcodec libx264 -preset fast -acodec libfaac  \
-                -x264opts level=4.1:crf=20 \
-                -maxrate 10000k -bufsize 3000k \
-                -f segment -segment_time 30 -segment_list cap.ffcat \
-                cap%04d.nut
+          -vcodec h264_nvenc -preset slow \
+          -profile:v high -level 5.1 -rc constqp -qp 32 \
+          -acodec aac \
+          -f segment -segment_time 30 -segment_list cap.ffcat \
+          cap%04d.nut \
+          -f libndi_newtek -y stream
+
+        # for h264 add -pix_fmt yuv420p
+        # for ndi add -pix_fmt rgb0
 
         sleep 1
 done
