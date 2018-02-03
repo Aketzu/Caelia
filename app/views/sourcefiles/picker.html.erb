@@ -20,7 +20,7 @@ Prev
 Next
 </div>
 
-<video ontimeupdate="updtime(this)" controls>
+<video id="preview" class="video-js" ontimeupdate="updtime(this)" preload="auto" width="1280" height="720" data-setup="{}" controls>
  <source src="<%=image_path("store/" + @sourcefile.video_path_mp4) %>" type='video/mp4'>
 </video>
 
