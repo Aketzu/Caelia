@@ -5,7 +5,7 @@ source 'https://rubygems.org'
 gem 'rails', '4.2.7'
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
-gem 'pg'
+gem 'pg', '~> 0.21'
 # Use SCSS for stylesheets
 gem 'sass-rails', '~> 5.0'
 gem 'bootstrap-sass', '~> 3.3.6'
@@ -45,6 +45,7 @@ group :development, :test do
   gem 'spring'
 end
 
+gem 'puma'
 gem 'rufus-scheduler'
 gem 'streamio-ffmpeg'
 gem 'therubyracer'
