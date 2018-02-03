@@ -30,10 +30,12 @@ class Vod < ActiveRecord::Base
   def self.Statuses
     ["New", "Prepare encode", "Encoding", "Optimizing", "VOD done", "Uploading", "Tube'd"]
   end
+
   def statustext
     return Vod.Statuses[status] if status
     "?"
   end
+
   def statusclass
     ss = ["", "info", "active", "info", "success", "active", "success"]
     return ss[status] if status
