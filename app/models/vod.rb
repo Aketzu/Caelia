@@ -55,7 +55,9 @@ class Vod < ActiveRecord::Base
 
     self.status = 2
     save
-    command="nice -n20 ionice -c3 ffmpeg -accurate_seek -ss %.2f -t %.2f -i \"%s\" -b:a 128k -x264opts level=4.1:crf=20 -preset fast -y \"%s\" 2>&1 " % [start_pos, end_pos - start_pos, recording.filepath + "/vod.ffcat", vod_filepath ]
+    command="nice -n20 ionice -c3 ffmpeg -accurate_seek -ss %.2f -t %.2f -i \"%s\" -b:a 128k -pix_fmt yuv420p -vcodec h264_nvenc -preset slow -bufsize 50M -rc vbr_hq -qmin:v 19 -b:v 10M -maxrate:v 30M -y \"%s\" 2>&1 " % [start_pos, end_pos - start_pos, recording.filepath + "/vod.ffcat", vod_filepath ]
+
+    logger.debug command
 
     progress = nil
     duration = nil
