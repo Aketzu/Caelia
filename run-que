@@ -1,0 +1,1 @@
+que -q upload -l debug -w 2 ./config/environment.rb

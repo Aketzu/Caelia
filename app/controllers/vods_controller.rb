@@ -4,7 +4,7 @@ class VodsController < ApplicationController
   # GET /vods
   # GET /vods.json
   def index
-    @vods = Vod.all.order(:name)
+    @vods = Vod.all.order(:name).includes(:recording)
   end
 
   # GET /vods/1
@@ -119,6 +119,8 @@ class VodsController < ApplicationController
   def dovod
     @vod = Vod.find(params[:id])
     @vod.prepare_encode
+    EncodeJob.enqueue params[:id]
+=begin
     job_id = Rufus::Scheduler.singleton.in '1s', :mutex => "vod_encode" do
       begin
         @vod.encode
@@ -127,9 +129,10 @@ class VodsController < ApplicationController
         logger.error ex.backtrace
       end
     end
+=end
 
     respond_to do |format|
-      format.html { redirect_to @vod, notice: "Vod job queued #{job_id}." }
+      format.html { redirect_to @vod, notice: "Vod job queued." }
       format.json { render :show, status: :ok, location: @vod }
     end
   end
@@ -137,13 +140,13 @@ class VodsController < ApplicationController
     @vod = Vod.find(params[:id])
     @vod.prepare_upload
 
-    job_id = Rufus::Scheduler.singleton.in '1s', :mutex => "vod_upload" do
-    #job_id = Rufus::Scheduler.singleton.in '1s' do
-      @vod.upload
-    end
+    UploadJob.enqueue params[:id], queue: 'upload'
+    #job_id = Rufus::Scheduler.singleton.in '1s', :mutex => "vod_upload" do
+    #  @vod.upload
+    #end
 
     respond_to do |format|
-      format.html { redirect_to @vod, notice: "Vod job queued #{job_id}." }
+      format.html { redirect_to @vod, notice: "Vod job queued." }
       format.json { render :show, status: :ok, location: @vod }
     end
   end
