@@ -5,7 +5,7 @@ require 'rails'
 
 require 'streamio-ffmpeg'
 
-ROOTPATH = "/mnt/asmvid/w18/rec".freeze
+ROOTPATH = "/mnt/asmvid/rec".freeze
 
 sfs = {}
 
