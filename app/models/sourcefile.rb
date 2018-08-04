@@ -20,10 +20,16 @@ class Sourcefile < ActiveRecord::Base
   def video_path_mp4
     fn = recording.name + "/" + File.basename(filename, ".nut") + ".mp4"
     # Create MP4 version for Chrome
-    unless File.exists?(recording.basepath + "/" + fn)
+    fullpath = recording.basepath + "/" + fn
+    unless File.exists?(fullpath)
       # system("ffmpeg -v 0 -i \"%s\" -c:v copy -c:a copy \"%s\"" % [recording.basepath+"/"+video_path, recording.basepath+"/"+fn])
       #system("ffmpeg -init_hw_device vaapi=foo:/dev/dri/renderD128 -hwaccel vaapi -hwaccel_output_format vaapi -hwaccel_device foo -i \"%s\" -filter_hw_device foo -vf 'hwupload,fps=10,scale_vaapi=w=1280:h=-2:format=nv12' -c:v h264_vaapi -level 40 -b:v 2M -maxrate 2M -c:a aac -y \"%s\"" % [recording.basepath+"/"+video_path, recording.basepath+"/"+fn])
-	    system("ffmpeg -i \"%s\" -preset fast -vcodec h264_nvenc -c:a copy \"%s\"" % [recording.basepath+"/"+video_path, recording.basepath+"/"+fn])
+	    logger.debug ("ffmpeg -i \"%s\" -preset fast -vcodec h264_nvenc -c:a copy \"%s\"" % [recording.basepath+"/"+video_path, fullpath])
+	    system("ffmpeg -i \"%s\" -preset fast -vcodec h264_nvenc -c:a copy \"%s\"" % [recording.basepath+"/"+video_path, fullpath])
+      if File.size(fullpath) == 0
+        File.delete(fullpath)
+        return ""
+      end
       system("mp4file --optimize \"%s\"" % [recording.basepath+"/"+fn])
     end
 

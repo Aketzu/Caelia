@@ -87,6 +87,11 @@ class Vod < ActiveRecord::Base
       end
     end
 
+    if File.size(vod_filepath) == 0
+      File.delete(vod_filepath)
+      raise Exception.new("Encoding error")
+    end
+
     #xx if $?.exitstatus != 0
     self.encode_pos = self.length
 
@@ -136,6 +141,10 @@ class Vod < ActiveRecord::Base
             self.encode_pos = ep 
             save
           end
+        end
+        if line =~ /^([A-Za-z0-9])$/
+          self.youtube = $1
+          save
         end
       end
     end

@@ -8,7 +8,7 @@ function updtime(x) {
 <% def imglink(sf)
   return unless sf
 %>
-<%=link_to image_tag("store/" + sf.preview_path, height: 180), pick_recording_path(sf, vod: params[:vod], pos: params[:pos]), title: sf.recorded_at.localtime.strftime("%Y-%m-%d %H:%M:%S") %>
+<%=link_to image_tag("store/" + sf.preview_path, height: 180, skip_pipeline: true), pick_recording_path(sf, vod: params[:vod], pos: params[:pos]), title: sf.recorded_at.localtime.strftime("%Y-%m-%d %H:%M:%S"), skip_pipeline: true %>
 <% end %>
 
 <div style='float: right; width: 320px;'>
@@ -21,7 +21,7 @@ Next
 </div>
 
 <video id="preview" class="video-js" ontimeupdate="updtime(this)" preload="auto" width="1280" height="720" data-setup="{}" controls>
- <source src="<%=image_path("store/" + @sourcefile.video_path_mp4) %>" type='video/mp4'>
+ <source src="<%=image_path("store/" + @sourcefile.video_path_mp4, skip_pipeline: true) %>" type='video/mp4'>
 </video>
 
 
