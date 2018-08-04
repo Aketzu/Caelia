@@ -1,0 +1,8 @@
+# m h  dom mon dow   command
+* * * * * rsync -aP stream-gen3.org.asm.fi:capture/ /mnt/asmvid/rec
+* * * * * rsync -aP stream-gen2.org.asm.fi:capture/ /mnt/asmvid/rec
+* * * * * rsync -aP stream-gen1.org.asm.fi:capture/ /mnt/asmvid/rec
+45 * * * * rsync -avP /mnt/asmvid aketzu@hanuri.org.asm.fi:raw/S18-vod1
+*/5 * * * * cd /mnt/asmvid/Caelia; /usr/local/bin/rails r jobs.rb
+*/5 * * * * pg_dump caelia_production | gzip > /mnt/asmvid/caelia.sql.gz
+

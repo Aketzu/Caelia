@@ -1,0 +1,8 @@
+#!/bin/bash
+
+for src in 3 4; do
+  for mode in $(seq 2 15); do
+    ./bmdcapture -C 0 -V $src -m $mode -f /dev/null -n 1 -F nut 2>&1 | grep -q detected || echo Video in src $src, mode $mode
+  done
+done
+
