@@ -1,25 +1,25 @@
 #!/bin/bash
 
 for ((;;)); do
-        DIR=/home/stream/capture/cap_gen1_$(date +%Y%m%d_%H%M)/
+  DIR=/home/stream/capture/cap_gen1_$(date +%Y%m%d_%H%M)/
 
-        mkdir -p $DIR
-        cd $DIR
+  mkdir -p $DIR
+  cd $DIR
 
-        # -p rgb8
-        /home/stream/capture/bmdcapture -C 0 -m 13 -A 2 -V 4 -M 8 -F nut \
-          -o strict=experimental:syncpoints=none -f pipe:1 | \
-        ffmpeg -vsync passthrough -y -i - -force_key_frames 'expr:gte(t,n_forced*30)' \
-          -vcodec h264_nvenc -preset slow \
-          -profile:v high -level 5.1 -rc constqp -qp 22 \
-          -acodec aac \
-          -f segment -segment_time 30 -segment_list cap.ffcat \
-          cap%04d.nut \
-          -f libndi_newtek -y stream
+  /home/stream/capture/bmdcapture -C 0 -m 7 -A 2 -V 4 -F nut \
+    -o strict=experimental:syncpoints=none -f pipe:1 | \
+  ffmpeg -vsync passthrough -y -probesize 200M -i - -force_key_frames 'expr:gte(t,n_forced*30)' \
+    -vcodec hevc_nvenc -preset medium \
+    -profile:v main -level 4.1 -rc vbr -b:v 10M -rc-lookahead 60 \
+    -acodec aac \
+    -f segment -segment_time 30 -segment_list cap.ffcat \
+    cap%04d.nut
+#    -f libndi_newtek -y stream
 
-        # for h264 add -pix_fmt yuv420p
-        # for ndi add -pix_fmt rgb0
+  # for h264 add -pix_fmt yuv420p
+  # for ndi add -pix_fmt rgb0
 
-        sleep 1
+  echo "Restarting in 5"
+  sleep 5
 done
 

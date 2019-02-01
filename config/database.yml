@@ -12,10 +12,10 @@ default: &default
 development:
   pool: 20
   adapter: postgresql
-  #host: /var/run/postgresql/
-  host: vod1
-  user: stream
-  password: stream
+  host: /var/run/postgresql/
+  #  host: vod1
+  #user: stream
+  #password: stream
   database: caelia_production
 
 # Warning: The database defined as "test" will be erased and

@@ -1,0 +1,20 @@
+#!/bin/bash
+
+for ((;;)); do
+  DIR=/home/stream/capture/cap_vod1_$(date +%Y%m%d_%H%M)/
+
+  mkdir -p $DIR
+  cd $DIR
+
+  ffmpeg -y -f libndi_newtek -i "$1"  -force_key_frames 'expr:gte(t,n_forced*30)' \
+    -vcodec hevc_nvenc -preset medium \
+    -profile:v main -level 4.1 -rc vbr -b:v 10M -rc-lookahead 60 \
+    -acodec aac \
+    -f segment -segment_time 30 -segment_list cap.ffcat \
+    cap%04d.nut
+
+
+  echo "Restarting in 5"
+  sleep 5
+done
+

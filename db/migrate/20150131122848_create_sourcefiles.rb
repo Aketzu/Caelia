@@ -1,4 +1,4 @@
-class CreateSourcefiles < ActiveRecord::Migration
+class CreateSourcefiles < ActiveRecord::Migration[4.2]
   def change
     create_table :sourcefiles do |t|
       t.references :recording, index: true

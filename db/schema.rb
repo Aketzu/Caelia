@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_08_03_204434) do
+ActiveRecord::Schema.define(version: 2019_02_01_173258) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -26,11 +26,30 @@ ActiveRecord::Schema.define(version: 2018_08_03_204434) do
     t.text "queue", default: "", null: false
   end
 
+  create_table "que_scheduler_audit", primary_key: "scheduler_job_id", id: :bigint, default: nil, comment: "4", force: :cascade do |t|
+    t.datetime "executed_at", null: false
+    t.index ["scheduler_job_id"], name: "index_que_scheduler_audit_on_scheduler_job_id", unique: true
+  end
+
+  create_table "que_scheduler_audit_enqueued", id: false, force: :cascade do |t|
+    t.bigint "scheduler_job_id", null: false
+    t.string "job_class", limit: 255, null: false
+    t.string "queue", limit: 255
+    t.integer "priority"
+    t.jsonb "args", null: false
+    t.bigint "job_id"
+    t.datetime "run_at"
+    t.index ["args"], name: "que_scheduler_audit_enqueued_args"
+    t.index ["job_class"], name: "que_scheduler_audit_enqueued_job_class"
+    t.index ["job_id"], name: "que_scheduler_audit_enqueued_job_id"
+  end
+
   create_table "recordings", id: :serial, force: :cascade do |t|
     t.string "basepath"
     t.string "name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "hidden", default: false
   end
 
   create_table "sourcefiles", id: :serial, force: :cascade do |t|
@@ -58,6 +77,7 @@ ActiveRecord::Schema.define(version: 2018_08_03_204434) do
     t.index ["recording_id"], name: "index_vods_on_recording_id"
   end
 
+  add_foreign_key "que_scheduler_audit_enqueued", "que_scheduler_audit", column: "scheduler_job_id", primary_key: "scheduler_job_id", name: "que_scheduler_audit_enqueued_scheduler_job_id_fkey"
   add_foreign_key "sourcefiles", "recordings"
   add_foreign_key "vods", "recordings"
 end

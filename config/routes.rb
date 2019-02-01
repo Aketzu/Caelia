@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   get 'sourcefiles/picker'
 
   get 'recordings/index'
+  get 'recordings/hide/:id' => 'recordings#hide', as: 'hide_recording'
   get 'recordings/:id' => 'recordings#list', as: 'list_recording'
 
   get 'recordings/picker/:id' => 'sourcefiles#picker', as: 'pick_recording'

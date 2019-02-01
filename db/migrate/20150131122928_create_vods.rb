@@ -1,4 +1,4 @@
-class CreateVods < ActiveRecord::Migration
+class CreateVods < ActiveRecord::Migration[4.2]
   def change
     create_table :vods do |t|
       t.string :name

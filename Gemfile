@@ -50,8 +50,9 @@ group :development, :test do
 end
 
 gem 'puma'
-gem 'rufus-scheduler'
 gem 'que'
+gem 'que-scheduler'
+gem 'rufus-scheduler'
 gem 'streamio-ffmpeg'
 gem 'therubyracer'
 gem 'yt'
