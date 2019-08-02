@@ -1,0 +1,8 @@
+
+#stream-gen1/2
+*/5 * * * * /usr/bin/rsync -4a --partial -e 'ssh -p 10022' --bwlimit=5m /home/stream/capture/ secure.vilant.com:/mnt/asmvid/capture
+
+#vod1
+PATH=/home/stream/bin:/usr/local/bin:/usr/bin:/bin:/usr/games:/home/stream/go/bin
+*/5 * * * * rsync -a --partial /mnt/asmvid/ aketzu@hanuri.org.asm.fi:raw/S19/vod
+
