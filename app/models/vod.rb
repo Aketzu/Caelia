@@ -13,7 +13,7 @@ class Vod < ActiveRecord::Base
       f.puts "ffconcat version 1.0"
       recording.sourcefiles.sort.each {|sf|
         f.puts "file " + sf.filename
-        f.puts "duration 30"
+        f.puts "duration " + sf.length.to_s
       }
     }
   end

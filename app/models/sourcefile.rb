@@ -24,8 +24,8 @@ class Sourcefile < ActiveRecord::Base
     unless File.exists?(fullpath)
       # system("ffmpeg -v 0 -i \"%s\" -c:v copy -c:a copy \"%s\"" % [recording.basepath+"/"+video_path, recording.basepath+"/"+fn])
       #system("ffmpeg -init_hw_device vaapi=foo:/dev/dri/renderD128 -hwaccel vaapi -hwaccel_output_format vaapi -hwaccel_device foo -i \"%s\" -filter_hw_device foo -vf 'hwupload,fps=10,scale_vaapi=w=1280:h=-2:format=nv12' -c:v h264_vaapi -level 40 -b:v 2M -maxrate 2M -c:a aac -y \"%s\"" % [recording.basepath+"/"+video_path, recording.basepath+"/"+fn])
-	    logger.debug ("ffmpeg -i \"%s\" -preset fast -vcodec h264_nvenc -c:a copy \"%s\"" % [recording.basepath+"/"+video_path, fullpath])
-	    system("ffmpeg -hwaccel cuvid -i \"%s\" -preset fast -vcodec h264_nvenc -c:a copy \"%s\"" % [recording.basepath+"/"+video_path, fullpath])
+	    logger.debug ("ffmpeg -i \"%s\" -preset fast -pix_fmt yuv420p -vcodec h264_nvenc -c:a copy \"%s\"" % [recording.basepath+"/"+video_path, fullpath])
+	    system("ffmpeg -hwaccel cuvid -i \"%s\" -preset fast -pix_fmt yuv420p -vcodec h264_nvenc -c:a copy \"%s\"" % [recording.basepath+"/"+video_path, fullpath])
       if File.size(fullpath) == 0
         File.delete(fullpath)
         return ""
@@ -41,6 +41,10 @@ class Sourcefile < ActiveRecord::Base
     unless File.exists?(preview_fullpath)
       system("ffmpeg -v 0 -i \"%s\" -vframes 1 -s 320x180 \"%s\"" % [video_fullpath, preview_fullpath])
     end
+  end
+
+  def start_pos
+    Sourcefile.where(recording_id: recording_id).where('nr < :nr', nr: nr).sum(:length)
   end
 
   def <=>(b)

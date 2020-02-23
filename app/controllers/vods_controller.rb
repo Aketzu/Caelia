@@ -76,8 +76,8 @@ class VodsController < ApplicationController
 
     sf = Sourcefile.find(params[:sourcefile_id])
 
-    @vod.start_pos = (sf.nr) * 30 + params[:timepos].to_f if params[:pos] == "start"
-    @vod.end_pos = (sf.nr) * 30 + params[:timepos].to_f if params[:pos] == "end"
+    @vod.start_pos = sf.start_pos + params[:timepos].to_f if params[:pos] == "start"
+    @vod.end_pos = sf.start_pos + params[:timepos].to_f if params[:pos] == "end"
 
     respond_to do |format|
       if @vod.save

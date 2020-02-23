@@ -23,12 +23,13 @@ class ScanRecordingsJob < Que::Job
           sf = sfs[rec.id.to_s + '-' + file]
           sf ||= Sourcefile.find_or_create_by(recording: rec, filename: file)
           sf.recorded_at = File.mtime(f) unless sf.recorded_at
+
           sf.check_preview
           sf.nr = sf.filename.gsub(/[^0-9]/, '').to_i
 
-          unless sf.length
+          if !sf.length || sf.length < 20 || (Time.now - sf.recorded_at).to_i < 400
             movie = FFMPEG::Movie.new(f)
-            sf.length = movie.duration
+            sf.length = movie.duration - movie.time
           end
           sf.save
         end

@@ -3,9 +3,9 @@ class EncodeJob < Que::Job
     @vod = Vod.find(jobid)
     begin
       @vod.encode
-    rescue Exception => ex
-      logger.error ex.message
-      logger.error ex.backtrace
+    rescue StandardError => ex
+      Que.log text: ex.message
+      Que.log text: ex.backtrace
     end
   end
 end
