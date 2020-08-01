@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_01_173258) do
+ActiveRecord::Schema.define(version: 2020_08_01_174720) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -26,9 +26,8 @@ ActiveRecord::Schema.define(version: 2019_02_01_173258) do
     t.text "queue", default: "", null: false
   end
 
-  create_table "que_scheduler_audit", primary_key: "scheduler_job_id", id: :bigint, default: nil, comment: "4", force: :cascade do |t|
+  create_table "que_scheduler_audit", primary_key: "scheduler_job_id", id: :bigint, default: nil, comment: "5", force: :cascade do |t|
     t.datetime "executed_at", null: false
-    t.index ["scheduler_job_id"], name: "index_que_scheduler_audit_on_scheduler_job_id", unique: true
   end
 
   create_table "que_scheduler_audit_enqueued", id: false, force: :cascade do |t|
