@@ -4,7 +4,7 @@ class VodsController < ApplicationController
   # GET /vods
   # GET /vods.json
   def index
-    @vods = Vod.all.order(:name).includes(:recording)
+    @vods = Vod.all.order(:id).includes(:recording)
   end
 
   # GET /vods/1
@@ -21,7 +21,7 @@ class VodsController < ApplicationController
     @vod = Vod.new
   	if params[:sourcefile_id]
 			sf = Sourcefile.find(params[:sourcefile_id])
-			@vod.start_pos = (sf.nr) * 30 + params[:timepos].to_f
+			@vod.start_pos = sf.start_pos + params[:timepos].to_f
 			@vod.recording_id = sf.recording_id
 		end
   end

@@ -18,6 +18,7 @@ class ScanRecordingsJob < Que::Job
         # rec.save
 
         Dir.glob(fn + '/*.nut').sort.each do |f|
+          next if File.zero?(f)
           file = File.basename(f)
           print progname + '/' + file + "\r"
           sf = sfs[rec.id.to_s + '-' + file]
