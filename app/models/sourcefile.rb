@@ -47,6 +47,16 @@ class Sourcefile < ActiveRecord::Base
     Sourcefile.where(recording_id: recording_id).where('nr < :nr', nr: nr).sum(:length)
   end
 
+  def self.file_at(recording, pos)
+    return Recording.find(recording).sourcefiles.first unless pos
+    res = ActiveRecord::Base.connection.exec_query("select max(id) from (select id, length, sum(length) over (order by id asc) as cum_len from sourcefiles where recording_id = #{recording}) t where cum_len - length < #{pos}")
+    id = 0
+    res.each do |r|
+      id = r['max']
+    end
+    Sourcefile.find(id)
+  end
+
   def <=>(b)
     self.nr <=> b.nr
   end

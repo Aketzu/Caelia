@@ -3,8 +3,13 @@
 Name: <%=@vod.name%><br />
 Recording: <%=@vod.recording.name%><br />
 ElaineID: <%=@vod.elaineid%><br />
-Start: <%=@vod.start_pos%> <%=link_to "Pick", list_recording_path(@vod.recording, vod: @vod, pos: :start)%><br />
-End: <%=@vod.end_pos%> <%=link_to "Pick", list_recording_path(@vod.recording, vod: @vod, pos: :end)%><br />
+<% sf = Sourcefile.file_at(@vod.recording.id, @vod.start_pos) %>
+Start: <%=@vod.start_pos%> <%=link_to "Pick", list_recording_path(@vod.recording, vod: @vod, pos: :start)%> |
+<%=link_to 'Tune', pick_recording_path(sf, vod: @vod, pos: :start, sec: @vod.start_pos - sf.start_pos)%> <br />
+<% sf = Sourcefile.file_at(@vod.recording.id, @vod.end_pos) %>
+End: <%=@vod.end_pos%> <%=link_to "Pick", list_recording_path(@vod.recording, vod: @vod, pos: :end)%> |
+<%=link_to 'Tune', pick_recording_path(sf, vod: @vod, pos: :end, sec: (@vod.end_pos || 0) - sf.start_pos)%> <br />
+
 
 <div id="status">
   <%=render partial: "status" %>
