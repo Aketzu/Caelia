@@ -1,2 +1,2 @@
 ScanRecordingsJob:
-  cron: "*/5 * * * *"
+  cron: "* * * * *"

@@ -55,7 +55,15 @@ class Vod < ActiveRecord::Base
 
     self.status = 2
     save
-    command="nice -n20 ionice -c3 ffmpeg -accurate_seek -ss %.2f -t %.2f -i \"%s\" -b:a 128k -pix_fmt yuv420p -vcodec h264_nvenc -preset slow -bufsize 50M -rc vbr_hq -qmin:v 19 -b:v 10M -maxrate:v 30M -y \"%s\" 2>&1 " % [start_pos, end_pos - start_pos, recording.filepath + "/vod.ffcat", vod_filepath ]
+
+    add_ads = true
+    if add_ads
+      intro_file = recording.basepath + '/intro.mp4'
+      outro_file = recording.basepath + '/outro.mp4'
+      command="nice -n20 ionice -c3 ffmpeg -i \"%s\" -accurate_seek -ss %.2f -t %.2f -i \"%s\" -i \"%s\" -filter_complex '[0:v][0:a][1:v][1:a][2:v][2:a] concat=n=3:v=1:a=1 [outv] [outa]' -map '[outv]' -map '[outa]' -b:a 128k -pix_fmt yuv420p -vcodec h264_nvenc -preset slow -bufsize 50M -rc vbr_hq -qmin:v 19 -b:v 10M -maxrate:v 30M -y \"%s\" 2>&1 " % [intro_file, start_pos, end_pos - start_pos, recording.filepath + "/vod.ffcat", outro_file, vod_filepath ]
+    else
+      command="nice -n20 ionice -c3 ffmpeg -accurate_seek -ss %.2f -t %.2f -i \"%s\" -b:a 128k -pix_fmt yuv420p -vcodec h264_nvenc -preset slow -bufsize 50M -rc vbr_hq -qmin:v 19 -b:v 10M -maxrate:v 30M -y \"%s\" 2>&1 " % [start_pos, end_pos - start_pos, recording.filepath + "/vod.ffcat", vod_filepath ]
+    end
 
     logger.debug command
 
