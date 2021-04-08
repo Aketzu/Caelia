@@ -1,11 +1,21 @@
 #!/bin/bash
 
+# This captures video from some capture device and writes it to ~30 second parts
+
 for ((;;)); do
+  # TODO: change directory to machine specific
   DIR=/home/stream/capture/cap_gen1_$(date +%Y%m%d_%H%M)/
 
   mkdir -p $DIR
   cd $DIR
 
+  # Unisheen UC3200HS - USB HDMI/SDI capture device
+  # ffmpeg -copyts -f alsa -i hw:3 -ts abs -f v4l2 -video_size 1920x1080 -i /dev/video2 -c:v copy -c:a copy -f nut -
+
+  # NDI Receive
+  # ffmpeg -y -f libndi_newtek -i "$1" -pix_fmt rgb0  -force_key_frames 'expr:gte(t,n_forced*30)' ...
+
+  # Blackmagic PCIe capture cards
   /home/stream/capture/bmdcapture -C 0 -m 7 -A 2 -V 4 -F nut \
     -o strict=experimental:syncpoints=none -f pipe:1 | \
   ffmpeg -vsync passthrough -y -probesize 200M -i - -force_key_frames 'expr:gte(t,n_forced*30)' \
@@ -14,12 +24,12 @@ for ((;;)); do
     -acodec aac \
     -f segment -segment_time 30 -segment_list cap.ffcat \
     cap%04d.nut
-#    -f libndi_newtek -y stream
+
+  # (re)stream to NDI
+  #   -f libndi_newtek -y stream
 
   # for h264 add -pix_fmt yuv420p
-  # for ndi add -pix_fmt rgb0
 
   echo "Restarting in 5"
   sleep 5
 done
-
