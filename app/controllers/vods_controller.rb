@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 class VodsController < ApplicationController
-  before_action :set_vod, only: [:show, :edit, :update, :destroy]
+  before_action :set_vod, only: %i[show edit update destroy]
 
   # GET /vods
   # GET /vods.json
@@ -10,31 +12,27 @@ class VodsController < ApplicationController
   # GET /vods/1
   # GET /vods/1.json
   def show
-    if request.xhr? and params[:status] == "1"
-      render partial: "status"
-
-    end
+    render partial: 'status' if request.xhr? && (params[:status] == '1')
   end
 
   # GET /vods/new
   def new
     @vod = Vod.new
-  	if params[:sourcefile_id]
-			sf = Sourcefile.find(params[:sourcefile_id])
-			@vod.start_pos = sf.start_pos + params[:timepos].to_f
-			@vod.recording_id = sf.recording_id
-		end
+    if params[:sourcefile_id]
+      sf = Sourcefile.find(params[:sourcefile_id])
+      @vod.start_pos = sf.start_pos + params[:timepos].to_f
+      @vod.recording_id = sf.recording_id
+    end
   end
 
   # GET /vods/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /vods
   # POST /vods.json
   def create
     @vod = Vod.new(vod_params)
-    @vod.push_to_elaine if @vod.elaineid == 0
+    @vod.push_to_elaine if @vod.elaineid.zero?
 
     respond_to do |format|
       if @vod.save
@@ -76,8 +74,8 @@ class VodsController < ApplicationController
 
     sf = Sourcefile.find(params[:sourcefile_id])
 
-    @vod.start_pos = sf.start_pos + params[:timepos].to_f if params[:pos] == "start"
-    @vod.end_pos = sf.start_pos + params[:timepos].to_f if params[:pos] == "end"
+    @vod.start_pos = sf.start_pos + params[:timepos].to_f if params[:pos] == 'start'
+    @vod.end_pos = sf.start_pos + params[:timepos].to_f if params[:pos] == 'end'
 
     respond_to do |format|
       if @vod.save
@@ -91,74 +89,73 @@ class VodsController < ApplicationController
   end
 
   def checkencodings
-    Vod.all.each {|v|
+    Vod.all.each do |v|
       unless v.status
-        v.status=0
+        v.status = 0
         v.save
       end
-      next if v.status == 0 or v.status >= 4
+      next if v.status.zero? || (v.status >= 4)
+
       if (Time.now - v.updated_at) > 1.minute
         v.status = 0
         v.save
       end
-    }
-    if Vod.all.where('status = 2').count == 0
-      job_id = Rufus::Scheduler.singleton.in '1s', :mutex => "vod_encode" do
-        begin
-          Vod.all.where('status = 0').first.encode
-        rescue Exception => ex
-          logger.error ex.message
-          logger.error ex.backtrace
-        end
+    end
+    if Vod.all.where('status = 2').count.zero?
+      job_id = Rufus::Scheduler.singleton.in '1s', mutex: 'vod_encode' do
+        Vod.all.where('status = 0').first.encode
+      rescue Exception => e
+        logger.error e.message
+        logger.error e.backtrace
       end
     end
 
-    render :text => ""
+    render text: ''
   end
 
   def dovod
     @vod = Vod.find(params[:id])
     @vod.prepare_encode
     EncodeJob.enqueue params[:id]
-=begin
-    job_id = Rufus::Scheduler.singleton.in '1s', :mutex => "vod_encode" do
-      begin
-        @vod.encode
-      rescue Exception => ex
-        logger.error ex.message
-        logger.error ex.backtrace
-      end
-    end
-=end
+    #     job_id = Rufus::Scheduler.singleton.in '1s', :mutex => "vod_encode" do
+    #       begin
+    #         @vod.encode
+    #       rescue Exception => ex
+    #         logger.error ex.message
+    #         logger.error ex.backtrace
+    #       end
+    #     end
 
     respond_to do |format|
-      format.html { redirect_to @vod, notice: "Vod job queued." }
+      format.html { redirect_to @vod, notice: 'Vod job queued.' }
       format.json { render :show, status: :ok, location: @vod }
     end
   end
+
   def upload
     @vod = Vod.find(params[:id])
     @vod.prepare_upload
 
     UploadJob.enqueue params[:id], queue: 'upload'
-    #job_id = Rufus::Scheduler.singleton.in '1s', :mutex => "vod_upload" do
+    # job_id = Rufus::Scheduler.singleton.in '1s', :mutex => "vod_upload" do
     #  @vod.upload
-    #end
+    # end
 
     respond_to do |format|
-      format.html { redirect_to @vod, notice: "Vod job queued." }
+      format.html { redirect_to @vod, notice: 'Vod job queued.' }
       format.json { render :show, status: :ok, location: @vod }
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_vod
-      @vod = Vod.find(params[:id])
-    end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
-    def vod_params
-      params[:vod].permit(:name, :recording_id, :start_pos, :end_pos, :elaineid)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_vod
+    @vod = Vod.find(params[:id])
+  end
+
+  # Never trust parameters from the scary internet, only allow the white list through.
+  def vod_params
+    params[:vod].permit(:name, :recording_id, :start_pos, :end_pos, :elaineid)
+  end
 end

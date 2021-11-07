@@ -46,5 +46,10 @@ Next
 <% end %>
 
 <script>
-  document.getElementById('preview').currentTime = <%=params[:sec]%>;
+  $(document).ready(function() {
+    var player = videojs('preview');
+    player.ready(function() {
+        this.currentTime(<%=params[:sec]%>);
+    });
+  });
 </script>

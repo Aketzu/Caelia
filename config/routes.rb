@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   resources :vods do
     member do
@@ -18,7 +20,7 @@ Rails.application.routes.draw do
 
   get 'recordings/picker/:id' => 'sourcefiles#picker', as: 'pick_recording'
 
-  #match "/images/store/:path/:file" => "recordings#image_proxy", via: :get
+  # match "/images/store/:path/:file" => "recordings#image_proxy", via: :get
 
   root 'recordings#index'
 

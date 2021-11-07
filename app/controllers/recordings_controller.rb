@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class RecordingsController < ApplicationController
   def index
     @recordings = Recording.all.where(hidden: false).order(:name)
