@@ -100,8 +100,7 @@ class Vod < ActiveRecord::Base
     self.status = 3
     save
 
-    add_ads = true # and false
-    if add_ads
+    if false
       intro_file = "#{recording.basepath}/intro.mov"
       outro_file = "#{recording.basepath}/outro.mov"
 
@@ -119,13 +118,16 @@ class Vod < ActiveRecord::Base
       )
     end
 
-    logger.debug command
+    # logger.debug command
+    Que.log event: :command, message: command
 
     progress = nil
     duration = nil
     prevpos = 0
+    log = ''
     IO.popen(command) do |pipe|
       pipe.each("\r") do |line|
+        log += line
         #  Duration: 00:01:04.13, start: 0.000000, bitrate: 117511 kb/s
         if line =~ (/Duration: (\d{2}):(\d{2}):(\d{2}).(\d{1})/) && duration.nil?
           duration = ((Regexp.last_match(1).to_i * 60 + Regexp.last_match(2).to_i) * 60 + Regexp.last_match(3).to_i) * 100 + Regexp.last_match(4).to_i
@@ -144,6 +146,14 @@ class Vod < ActiveRecord::Base
         end
         # end
       end
+      pipe.close
+    end
+    ret = $?
+
+    if ret != 0
+      Que.log event: :cmdfail, message: ret
+      Que.log event: :cmdlog, message: log
+      raise StandardError, 'Encoding error'
     end
 
     if File.size(vod_filepath).zero?

@@ -32,7 +32,7 @@ class VodsController < ApplicationController
   # POST /vods.json
   def create
     @vod = Vod.new(vod_params)
-    @vod.push_to_elaine if @vod.elaineid.zero?
+    #@vod.push_to_elaine if @vod.elaineid.zero?
 
     respond_to do |format|
       if @vod.save

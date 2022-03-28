@@ -6,7 +6,9 @@ ROOTPATH = '/tank0/asm/ct21/rec'
 require 'streamio-ffmpeg'
 
 class ScanRecordingsJob < Que::Job
-  def run
+  def run(foo)
+    puts foo
+    puts foo.inspect
     sfs = {}
 
     Sourcefile.all.includes(:recording).each do |s|
