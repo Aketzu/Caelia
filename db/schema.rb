@@ -10,12 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_03_28_191700) do
+ActiveRecord::Schema.define(version: 2023_02_23_074716) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "que_jobs", comment: "6", force: :cascade do |t|
+  create_table "que_jobs", comment: "7", force: :cascade do |t|
     t.integer "priority", limit: 2, default: 100, null: false
     t.datetime "run_at", default: -> { "now()" }, null: false
     t.text "job_class", null: false
@@ -53,7 +53,7 @@ ActiveRecord::Schema.define(version: 2022_03_28_191700) do
     t.check_constraint "(array_ndims(worker_priorities) = 1) AND (array_length(worker_priorities, 1) IS NOT NULL)", name: "valid_worker_priorities"
   end
 
-  create_table "que_scheduler_audit", primary_key: "scheduler_job_id", id: :bigint, default: nil, comment: "6", force: :cascade do |t|
+  create_table "que_scheduler_audit", primary_key: "scheduler_job_id", id: :bigint, default: nil, comment: "7", force: :cascade do |t|
     t.datetime "executed_at", null: false
   end
 

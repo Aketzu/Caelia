@@ -54,9 +54,9 @@ end
 
 gem 'httparty'
 gem 'puma'
-gem 'que', '~> 2.0.0.beta1'
+gem 'que' #, '~> 2.0.0.beta1'
 gem 'que-scheduler'
 # gem 'rufus-scheduler'
 gem 'streamio-ffmpeg'
-gem 'therubyracer'
+gem 'mini_racer'
 gem 'yt'

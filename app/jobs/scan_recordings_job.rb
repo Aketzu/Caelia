@@ -2,13 +2,11 @@
 
 # ROOTPATH = '/mnt/asmvid/rec'.freeze
 # ROOTPATH = '/tank0/asm/s17/rec'.freeze
-ROOTPATH = '/tank0/asm/ct21/rec'
+ROOTPATH = '/tank0/asm/w24/rec'
 require 'streamio-ffmpeg'
 
 class ScanRecordingsJob < Que::Job
-  def run(foo)
-    puts foo
-    puts foo.inspect
+  def run
     sfs = {}
 
     Sourcefile.all.includes(:recording).each do |s|

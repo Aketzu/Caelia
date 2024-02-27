@@ -61,7 +61,7 @@ class Vod < ActiveRecord::Base
     self.status = 2
     save
 
-    target_loudness = -23
+    target_loudness = -18
 
     command = "nice -n20 ionice -c3 ffmpeg -accurate_seek -ss #{start_pos} -t #{end_pos - start_pos} " \
       "-i \"#{recording.filepath}/vod.ffcat\" " \
@@ -107,15 +107,17 @@ class Vod < ActiveRecord::Base
       command = "nice -n20 ionice -c3 ffmpeg -i \"#{intro_file}\" -accurate_seek -ss #{start_pos} -t #{end_pos - start_pos} " \
         "-i \"#{recording.filepath}/vod.ffcat\" -i \"#{outro_file}\" " \
         "-filter_complex '[1:v] fade=in:d=0.5,fade=out:d=0.5:st=#{end_pos - start_pos - 0.5} [fv];" \
-        "[1:a] afade=in:d=0.5,afade=out:d=0.5:st=#{end_pos - start_pos - 0.5},loudnorm=i=#{target_loudness}:measured_i=#{loud['input_i']}:measured_lra=#{loud['input_lra']}:measured_tp=#{loud['input_tp']}:measured_thresh=#{loud['input_thresh']}:print_format=json [fa];"\
+        "[1:a] afade=in:d=0.5,afade=out:d=0.5:st=#{end_pos - start_pos - 0.5}," \
+        "loudnorm=i=#{target_loudness}:measured_i=#{loud['input_i']}:measured_lra=#{loud['input_lra']}:measured_tp=#{loud['input_tp']}:measured_thresh=#{loud['input_thresh']}:print_format=json [fa];"\
         "[0:v][0:a][fv][fa][2:v][2:a] concat=n=3:v=1:a=1 [outv] [outa]' -map '[outv]' -map '[outa]' " \
         '-b:a 192k -pix_fmt yuv420p -vcodec h264_nvenc -preset p6 -bufsize 50M -rc vbr -rc-lookahead 60 ' \
         "-qmin:v 19 -b:v 10M -maxrate:v 30M -movflags faststart -y \"#{vod_filepath}\" 2>&1"
 
     else
-      command = format(
-        'nice -n20 ionice -c3 ffmpeg -accurate_seek -ss %.2f -t %.2f -i "%s" -b:a 128k -pix_fmt yuv420p -vcodec h264_nvenc -preset p6 -bufsize 50M -rc vbr -rc-lookahead 60 -qmin:v 19 -b:v 10M -maxrate:v 30M -movflags faststart -y "%s" 2>&1 ', start_pos, end_pos - start_pos, "#{recording.filepath}/vod.ffcat", vod_filepath
-      )
+      command = "nice -n20 ionice -c3 ffmpeg -accurate_seek -ss #{start_pos} -t #{end_pos - start_pos} -i \"#{recording.filepath}/vod.ffcat\" "\
+        "-filter_complex 'loudnorm=i=#{target_loudness}:measured_i=#{loud['input_i']}:measured_lra=#{loud['input_lra']}:measured_tp=#{loud['input_tp']}:measured_thresh=#{loud['input_thresh']}:print_format=json' "\
+        '-b:a 128k -pix_fmt yuv420p -vcodec h264_nvenc -preset p6 -bufsize 50M -rc vbr -rc-lookahead 60 ' \
+        "-qmin:v 19 -b:v 10M -maxrate:v 30M -movflags faststart -y \"#{vod_filepath}\" 2>&1 "
     end
 
     # logger.debug command

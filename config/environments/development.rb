@@ -73,4 +73,8 @@ Rails.application.configure do
 
   # Uncomment if you wish to allow Action Cable access from any origin.
   # config.action_cable.disable_request_forgery_protection = true
+
+  config.hosts << 'ampere.aketzu.net.ovpn.lan.vilant.com'
+  config.hosts << 'aketzu.net'
+  config.hosts << '10.6.129.2'
 end
