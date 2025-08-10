@@ -2,7 +2,7 @@
 
 # ROOTPATH = '/mnt/asmvid/rec'.freeze
 # ROOTPATH = '/tank0/asm/s17/rec'.freeze
-ROOTPATH = '/tank0/asm/w24/rec'
+ROOTPATH = '/tank0/asm/s25/rec'
 require 'streamio-ffmpeg'
 
 class ScanRecordingsJob < Que::Job
@@ -34,9 +34,10 @@ class ScanRecordingsJob < Que::Job
           sf.check_preview
           sf.nr = sf.filename.gsub(/[^0-9]/, '').to_i
 
-          if !sf.length || sf.length < 20 || (Time.now - sf.recorded_at).to_i < 400
+          if !sf.length || sf.length < 25 || (Time.now - sf.recorded_at).to_i < 400
             movie = FFMPEG::Movie.new(f)
             sf.length = movie.duration - movie.time
+            sf.bitrate = File.size(f) * 8 / sf.length
           end
           sf.save
         end

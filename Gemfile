@@ -52,11 +52,12 @@ group :development, :test do
   # gem 'spring-watcher-listen', '~> 2.0.0'
 end
 
+gem 'concurrent-ruby', '1.3.4'
 gem 'httparty'
 gem 'puma'
 gem 'que' #, '~> 2.0.0.beta1'
 gem 'que-scheduler'
 # gem 'rufus-scheduler'
 gem 'streamio-ffmpeg'
-gem 'mini_racer'
+# gem 'mini_racer'
 gem 'yt'

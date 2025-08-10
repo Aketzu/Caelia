@@ -1,34 +1,37 @@
 #!/bin/bash
 
-# This captures video from some capture device and writes it to ~30 second parts
+umask 002
 
 for ((;;)); do
-  # TODO: change directory to machine specific
   DIR=/home/stream/capture/cap_gen1_$(date +%Y%m%d_%H%M)/
 
   mkdir -p $DIR
   cd $DIR
 
-  # Unisheen UC3200HS - USB HDMI/SDI capture device
-  # ffmpeg -copyts -f alsa -i hw:3 -ts abs -f v4l2 -video_size 1920x1080 -i /dev/video2 -c:v copy -c:a copy -f nut -
+  #Input:
+  # ffmpeg -copyts -f alsa -i hw:3 -ts abs -f v4l2 -video_size 1920x1080 -i /dev/video2 \
+  # ffmpeg -f libndi_newtek -probesize 200M -i "$1" -pix_fmt yuv444p \
+  # ffmpeg -f decklink  -i 'DeckLink Mini Recorder 4K' \
 
-  # NDI Receive
-  # ffmpeg -y -f libndi_newtek -i "$1" -pix_fmt rgb0  -force_key_frames 'expr:gte(t,n_forced*30)' ...
+  #Codec:
+  #  -vcodec hevc_nvenc -preset medium \
+  #  -profile:v main -level 4.1 -rc vbr -b:v 15M -rc-lookahead 60 \
+  #
+  #  -global_quality 18 -rc_mode QVBR \
+  #  -vaapi_device /dev/dri/renderD128 \
+  #  -vf 'format=nv12,hwupload' -vcodec hevc_vaapi \
+  #  -profile:v main -level 4.1 -b:v 15M -maxrate 30M  \
 
-  # Blackmagic PCIe capture cards
-  /home/stream/capture/bmdcapture -C 0 -m 7 -A 2 -V 4 -F nut \
-    -o strict=experimental:syncpoints=none -f pipe:1 | \
-  ffmpeg -vsync passthrough -y -probesize 200M -i - -force_key_frames 'expr:gte(t,n_forced*30)' \
-    -vcodec hevc_nvenc -preset medium \
-    -profile:v main -level 4.1 -rc vbr -b:v 10M -rc-lookahead 60 \
-    -acodec aac \
-    -f segment -segment_time 30 -segment_list cap.ffcat \
-    cap%04d.nut
+  #  -f segment -segment_time 30 -segment_list cap.ffcat cap%04d.nut
 
-  # (re)stream to NDI
-  #   -f libndi_newtek -y stream
-
-  # for h264 add -pix_fmt yuv420p
+  ffmpeg -f decklink  -i 'DeckLink Mini Recorder 4K' \
+    -force_key_frames 'expr:gte(t,n_forced*30)' \
+    -global_quality 20 -rc_mode QVBR \
+    -vaapi_device /dev/dri/renderD128 \
+    -vf 'format=nv12,hwupload' -vcodec hevc_vaapi \
+    -profile:v main -level 4.1 -b:v 15M -maxrate 30M  \
+    -acodec aac -b:a 196k \
+    -f tee -map 0:v -map 0:a "[f=segment:segment_time=30:segment_list=cap.ffcat]cap%04d.nut|[f=mpegts]srt://stream.aketzu.net:8890?streamid=publish:s1&pkt_size=1316"
 
   echo "Restarting in 5"
   sleep 5

@@ -114,13 +114,18 @@ class Vod < ActiveRecord::Base
         "-qmin:v 19 -b:v 10M -maxrate:v 30M -movflags faststart -y \"#{vod_filepath}\" 2>&1"
 
     else
-      command = "nice -n20 ionice -c3 ffmpeg -accurate_seek -ss #{start_pos} -t #{end_pos - start_pos} -i \"#{recording.filepath}/vod.ffcat\" "\
-        "-filter_complex 'loudnorm=i=#{target_loudness}:measured_i=#{loud['input_i']}:measured_lra=#{loud['input_lra']}:measured_tp=#{loud['input_tp']}:measured_thresh=#{loud['input_thresh']}:print_format=json' "\
-        '-b:a 128k -pix_fmt yuv420p -vcodec h264_nvenc -preset p6 -bufsize 50M -rc vbr -rc-lookahead 60 ' \
-        "-qmin:v 19 -b:v 10M -maxrate:v 30M -movflags faststart -y \"#{vod_filepath}\" 2>&1 "
+      # '-b:a 128k -pix_fmt yuv420p -vcodec h264_nvenc -preset p6 -bufsize 50M -rc vbr -rc-lookahead 60 ' \
+      # "-qmin:v 19 -b:v 10M -maxrate:v 30M " \
+      command = "nice -n20 ionice -c3 ffmpeg -hwaccel cuda -accurate_seek -ss #{start_pos} -t #{end_pos - start_pos} " \
+        "-i \"#{recording.filepath}/vod.ffcat\" -filter_complex 'loudnorm=i=#{target_loudness}:" \
+        "measured_i=#{loud['input_i']}:measured_lra=#{loud['input_lra']}:measured_tp=#{loud['input_tp']}:" \
+        "measured_thresh=#{loud['input_thresh']}:print_format=json' " \
+        '-c:v hevc_nvenc -preset p6 -tune hq -tier high -rc-lookahead 20 -temporal_aq 1 -bf 3 -b_ref_mode middle ' \
+        '-bufsize 10M -rc constqp -qp 18 -b:a 196k ' \
+        "-y \"#{vod_filepath}\" 2>&1 "
     end
 
-    # logger.debug command
+    logger.debug command
     Que.log event: :command, message: command
 
     progress = nil
