@@ -45,6 +45,28 @@ class Sourcefile < ActiveRecord::Base
     fn
   end
 
+  def waveform_path
+    fn = "#{recording.name}/#{File.basename(filename, '.nut')}.png"
+    # Create MP4 version for Chrome
+    fullpath = "#{recording.basepath}/#{fn}"
+    unless File.exist?(fullpath)
+      cmd = "ffmpeg -i '#{recording.basepath}/#{video_path}' \
+        -f lavfi -i 'color=c=#c0c0c0:s=1280x480' -filter_complex \" \
+        [0:a] showwavespic=s=1280x480:split_channels=1:colors=#3232c8:filter=peak [pk]; \
+        [0:a] showwavespic=s=1280x480:split_channels=1:colors=#6464dc [rms], \
+        [pk] [rms] overlay=format=auto [nobg], [1:v] [nobg] overlay=format=auto \
+        \" -frames:v 1 '#{fullpath}'"
+      logger.debug cmd
+      system cmd
+      if File.size(fullpath).zero?
+        File.delete(fullpath)
+        return ''
+      end
+    end
+
+    fn
+  end
+
   def check_preview
     # previewfile = "preview_" + File.basename(f, ".nut") + ".jpg"
     unless File.exist?(preview_fullpath)

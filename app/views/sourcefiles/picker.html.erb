@@ -2,6 +2,8 @@
 <script>
 function updtime(x) {
   $("#timepos").val(x.currentTime);
+  wp = $("#wprogress");
+  wp.css("left", (x.currentTime / x.duration) * 1280 + "px");
 }
 </script>
 
@@ -44,6 +46,12 @@ Next
 <% end %>
 
 <% end %>
+
+<div style="position: relative">
+<div id="wprogress" style="position: absolute; left: 0px; border-right: 1px solid red; height: 480px; width: 1px;">
+</div>
+<%=image_tag("store/" + @sourcefile.waveform_path, skip_pipeline: true) %>
+</div>
 
 <script>
   $(document).ready(function() {
