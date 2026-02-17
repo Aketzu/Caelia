@@ -32,7 +32,7 @@ class Vod < ActiveRecord::Base
   end
 
   def self.Statuses
-    ['New', 'Prepare encode', 'Loudnorm', 'Encoding', 'Optimizing', 'VOD done', 'Uploading', "Tube'd"]
+    ['New', 'Waiting', 'Loudnorm', 'Encoding', 'Optimizing', 'VOD done', 'Uploading', "Tube'd"]
   end
 
   def statustext
@@ -43,7 +43,7 @@ class Vod < ActiveRecord::Base
 
   def statusclass
     ss = ['', 'info', 'active', 'info', 'success', 'active', 'success']
-    return ss[status] if status
+    ss[status] if status
   end
 
   def prepare_encode
@@ -122,7 +122,7 @@ class Vod < ActiveRecord::Base
         "measured_thresh=#{loud['input_thresh']}:print_format=json' " \
         '-c:v hevc_nvenc -preset p6 -tune hq -tier high -rc-lookahead 20 -temporal_aq 1 -bf 3 -b_ref_mode middle ' \
         '-bufsize 10M -rc constqp -qp 18 -b:a 196k ' \
-        "-y \"#{vod_filepath}\" 2>&1 "
+        "-y -movflags faststart \"#{vod_filepath}\" 2>&1 "
     end
 
     logger.debug command
@@ -174,7 +174,8 @@ class Vod < ActiveRecord::Base
     self.status = 4
     save
 
-    system(format('nice -n20 ionice -c3 mp4file --optimize "%s"', vod_filepath))
+    # mp4file --optimize uses random32() for temp file name and always gets the same random so this is not multiprocess safe
+    # system(format('nice -n20 ionice -c3 mp4file --optimize "%s"', vod_filepath))
 
     self.status = 5
     save
