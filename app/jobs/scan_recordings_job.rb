@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-# ROOTPATH = '/mnt/asmvid/rec'.freeze
-# ROOTPATH = '/tank0/asm/s17/rec'.freeze
-ROOTPATH = '/tank0/asm/s25/rec'
+ROOTPATH = '/tank0/asm/w26/rec'
 require 'streamio-ffmpeg'
 
 class ScanRecordingsJob < Que::Job

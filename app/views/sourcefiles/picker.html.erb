@@ -57,7 +57,14 @@ Next
   $(document).ready(function() {
     var player = videojs('preview');
     player.ready(function() {
-        this.currentTime(<%=params[:sec]%>);
+      this.currentTime(<%=params[:sec]%>);
+      this.hotkeys({
+        volumeStep: 0.1,
+        seekStep: 0.04,
+        enableModifiersForNumbers: false,
+        enableVolumeScroll: false,
+        enableJogStyle: true
+      });
     });
   });
 </script>

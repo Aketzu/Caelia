@@ -3,7 +3,7 @@
 source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 6.1'
+gem 'rails', '~> 8.1'
 # Use sqlite3 as the database for Active Record
 # gem 'sqlite3'
 gem 'pg', '~> 1.1'
@@ -22,9 +22,9 @@ gem 'webpacker', '~> 5.0'
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
-gem 'turbolinks', '~> 5'
+# gem 'turbolinks', '~> 5'
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 2.7'
+gem 'jbuilder'
 # bundle exec rake doc:rails generates the API under doc/api.
 # gem 'sdoc', '~> 0.4.0', group: :doc
 
@@ -36,9 +36,28 @@ gem 'jbuilder', '~> 2.7'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
-gem 'bootsnap', '>= 1.4.4', require: false
+gem 'bootsnap', require: false
+
+gem 'solid_cable'
+gem 'solid_cache'
+gem 'solid_queue'
+
+gem "thruster", require: false
+gem "image_processing", "~> 1.2"
+
+
+
 
 group :development, :test do
+  # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
+  gem "bundler-audit", require: false
+
+  # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
+  gem "brakeman", require: false
+
+  # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
+  gem "rubocop-rails-omakase", require: false
+
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug'
 
@@ -55,7 +74,7 @@ end
 gem 'concurrent-ruby', '1.3.4'
 gem 'httparty'
 gem 'puma'
-gem 'que' #, '~> 2.0.0.beta1'
+gem 'que' # , '~> 2.0.0.beta1'
 gem 'que-scheduler'
 # gem 'rufus-scheduler'
 gem 'streamio-ffmpeg'
